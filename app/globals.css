@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ease-soft: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: radial-gradient(circle at top, #020617 0, #020617 45%, #020617 100%);
+}
+
+.glass-panel {
+  @apply rounded-3xl border border-white/10 bg-white/5 shadow-glass-soft backdrop-blur-2xl;
+}
+
+.glass-panel-light {
+  @apply rounded-3xl border border-slate-200/60 bg-white/70 shadow-xl backdrop-blur-2xl;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+.geo-mask {
+  mask-image: radial-gradient(circle at top, black 0, black 55%, transparent 100%);
+}
+
+.calligraphy {
+  font-feature-settings: "swsh" 1, "liga" 1, "calt" 1;
+}
+
+.card-tilt {
+  transform-style: preserve-3d;
+}
+
+.card-tilt-inner {
+  transform: translateZ(35px);
+}
+
+.gradient-orbit {
+  background:
+    conic-gradient(
+      from 180deg at 50% 50%,
+      rgba(56, 189, 248, 0.3),
+      rgba(244, 114, 182, 0.45),
+      rgba(250, 204, 21, 0.7),
+      rgba(56, 189, 248, 0.3)
+    );
+}
+
