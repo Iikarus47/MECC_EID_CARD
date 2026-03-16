@@ -1,4 +1,4 @@
-## Eid Mubarak – Celestial Celebration
+## MECC_EID_CARD – Eid Mubarak Celestial Celebration
 
 A cinematic, single-page Eid Mubarak experience built with **Next.js**, **React**, and **Tailwind CSS**. It features a night-sky hero, interactive personalized greeting, ambient sound toggle, glassmorphism UI, and a sharable digital Eid card.
 
