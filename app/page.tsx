@@ -5,6 +5,33 @@ import { MoonIcon, SunIcon, MusicalNoteIcon } from "@heroicons/react/24/outline"
 
 type Theme = "dark" | "light";
 
+const debugLog = (payload: {
+  hypothesisId: "H1" | "H2" | "H3" | "H4";
+  message: string;
+  data?: Record<string, unknown>;
+  runId?: string;
+  location: string;
+}) => {
+  // #region agent log
+  fetch("http://127.0.0.1:7426/ingest/482b0f96-cfda-42da-81c8-88fe95de79fb", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Debug-Session-Id": "de25a5"
+    },
+    body: JSON.stringify({
+      sessionId: "de25a5",
+      timestamp: Date.now(),
+      runId: payload.runId ?? "pre-fix",
+      hypothesisId: payload.hypothesisId,
+      location: payload.location,
+      message: payload.message,
+      data: payload.data ?? {}
+    })
+  }).catch(() => {});
+  // #endregion
+};
+
 const useTheme = (): [Theme, () => void] => {
   const [theme, setTheme] = useState<Theme>("dark");
 
@@ -19,6 +46,18 @@ const useTheme = (): [Theme, () => void] => {
     } else {
       document.documentElement.classList.add("dark");
     }
+
+    // #region agent log
+    debugLog({
+      hypothesisId: "H2",
+      location: "app/page.tsx:useTheme:init",
+      message: "Theme initialized",
+      data: {
+        stored,
+        htmlHasDarkClass: document.documentElement.classList.contains("dark")
+      }
+    });
+    // #endregion
   }, []);
 
   const toggle = () => {
@@ -125,6 +164,39 @@ const StarField = () => {
       className="pointer-events-none fixed inset-0 -z-10 h-full w-full geo-mask"
       aria-hidden="true"
     />
+  );
+};
+
+const TailwindProbe = () => {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const cs = window.getComputedStyle(el);
+
+    // H1/H3: Tailwind not running / globals not processed => classes won't apply
+    debugLog({
+      hypothesisId: "H1",
+      location: "app/page.tsx:TailwindProbe",
+      message: "Computed styles for Tailwind probe element",
+      data: {
+        color: cs.color,
+        backgroundColor: cs.backgroundColor,
+        borderRadius: cs.borderRadius,
+        opacity: cs.opacity,
+        className: el.className
+      }
+    });
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed left-2 top-2 z-[9999] rounded-full bg-emerald-400/70 px-3 py-1 text-xs font-semibold text-slate-950 opacity-90"
+    >
+      TailwindProbe
+    </div>
   );
 };
 
@@ -344,6 +416,7 @@ const EidPage = () => {
           : "bg-gradient-to-b from-amber-50 via-slate-50 to-emerald-50 text-slate-900"
       }`}
     >
+      <TailwindProbe />
       <StarField />
       <div className="noise-overlay" />
 
