@@ -314,7 +314,7 @@ const EidPage = () => {
             />
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700/80 dark:text-emerald-300/80">
-                Festive Eid Card
+                Eid card - A memeory relived
               </p>
             </div>
           </div>

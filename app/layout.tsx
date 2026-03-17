@@ -21,7 +21,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Eid Mubarak – Celestial Celebration",
+  title: "Eid card - A memeory relived",
   description:
     "A cinematic, interactive Eid Mubarak experience with 3D moon, lanterns, and immersive festive ambiance."
 };
