@@ -11,8 +11,21 @@ body {
   scroll-behavior: smooth;
 }
 
-body {
+/* Font + baseline colors switch with theme. */
+html:not(.dark) body {
+  font-family: var(--font-sans);
+  color: rgb(15 23 42);
+  background: linear-gradient(180deg, rgb(255 251 235) 0%, rgb(248 250 252) 45%, rgb(236 253 245) 100%);
+}
+
+html.dark body {
+  font-family: var(--font-playfair);
+  color: rgb(241 245 249);
   background: radial-gradient(circle at top, #020617 0, #020617 45%, #020617 100%);
+}
+
+body {
+  /* Background is controlled by theme selectors above. */
 }
 
 .glass-panel {

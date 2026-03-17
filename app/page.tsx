@@ -167,39 +167,6 @@ const StarField = () => {
   );
 };
 
-const TailwindProbe = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const cs = window.getComputedStyle(el);
-
-    // H1/H3: Tailwind not running / globals not processed => classes won't apply
-    debugLog({
-      hypothesisId: "H1",
-      location: "app/page.tsx:TailwindProbe",
-      message: "Computed styles for Tailwind probe element",
-      data: {
-        color: cs.color,
-        backgroundColor: cs.backgroundColor,
-        borderRadius: cs.borderRadius,
-        opacity: cs.opacity,
-        className: el.className
-      }
-    });
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className="fixed left-2 top-2 z-[9999] rounded-full bg-emerald-400/70 px-3 py-1 text-xs font-semibold text-slate-950 opacity-90"
-    >
-      TailwindProbe
-    </div>
-  );
-};
-
 const Fireworks = ({ active }: { active: boolean }) => {
   if (!active) return null;
   return (
@@ -224,7 +191,7 @@ const HeroIllustration = ({ theme }: { theme: Theme }) => {
   const baseParallax = scrollOffset * 0.08;
 
   return (
-    <div className="relative mx-auto flex h-[430px] w-full max-w-5xl items-center justify-center overflow-visible">
+    <div className="relative z-0 mx-auto flex h-[430px] w-full max-w-5xl items-center justify-center overflow-visible">
       <div
         className="absolute inset-[-2px] -z-10 rounded-[32px] opacity-80 blur-3xl transition-opacity duration-700"
         style={{
@@ -236,12 +203,66 @@ const HeroIllustration = ({ theme }: { theme: Theme }) => {
       />
 
       <div
-        className={`relative h-[340px] w-full overflow-hidden rounded-[30px] border transition-colors duration-700 ${
+        className={`relative z-0 h-[340px] w-full overflow-hidden rounded-[30px] border transition-colors duration-700 ${
           theme === "dark"
             ? "border-slate-700/70 bg-gradient-to-b from-slate-900/80 via-slate-950/90 to-slate-950"
             : "border-slate-200/80 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200"
         }`}
       >
+        {/* Mosque silhouette overlay (both themes). */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-2/3 opacity-90">
+          <svg
+            viewBox="0 0 1200 360"
+            className="absolute bottom-0 h-full w-full"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="silGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop
+                  offset="0%"
+                  stopColor={theme === "dark" ? "rgba(16, 185, 129, 0.22)" : "rgba(5, 150, 105, 0.22)"}
+                />
+                <stop
+                  offset="60%"
+                  stopColor={theme === "dark" ? "rgba(2, 6, 23, 0.68)" : "rgba(15, 23, 42, 0.32)"}
+                />
+                <stop
+                  offset="100%"
+                  stopColor={theme === "dark" ? "rgba(2, 6, 23, 0.92)" : "rgba(15, 23, 42, 0.55)"}
+                />
+              </linearGradient>
+            </defs>
+            <path
+              d="M0 300 C120 280 170 250 220 230 C260 214 310 214 340 232 C390 262 430 268 470 252 C520 230 560 190 610 180 C690 165 730 210 760 232 C800 262 850 272 900 250 C960 224 980 194 1020 178 C1090 150 1130 188 1200 210 L1200 360 L0 360 Z"
+              fill="url(#silGrad)"
+            />
+            <path
+              d="M120 330 L120 245 Q140 235 160 245 L160 330 Z M155 245 Q140 210 120 245 Z"
+              fill={theme === "dark" ? "rgba(2,6,23,0.88)" : "rgba(15,23,42,0.55)"}
+            />
+            <path
+              d="M220 330 L220 210 Q260 188 300 210 L300 330 Z M300 210 Q260 150 220 210 Z"
+              fill={theme === "dark" ? "rgba(2,6,23,0.9)" : "rgba(15,23,42,0.6)"}
+            />
+            <path
+              d="M460 330 L460 180 Q520 150 580 180 L580 330 Z M580 180 Q520 95 460 180 Z"
+              fill={theme === "dark" ? "rgba(2,6,23,0.92)" : "rgba(15,23,42,0.62)"}
+            />
+            <path
+              d="M680 330 L680 200 Q720 184 760 200 L760 330 Z M760 200 Q720 140 680 200 Z"
+              fill={theme === "dark" ? "rgba(2,6,23,0.9)" : "rgba(15,23,42,0.6)"}
+            />
+            <path
+              d="M880 330 L880 225 Q910 214 940 225 L940 330 Z M940 225 Q910 180 880 225 Z"
+              fill={theme === "dark" ? "rgba(2,6,23,0.88)" : "rgba(15,23,42,0.58)"}
+            />
+            <path
+              d="M1030 330 L1030 205 Q1065 190 1100 205 L1100 330 Z M1100 205 Q1065 150 1030 205 Z"
+              fill={theme === "dark" ? "rgba(2,6,23,0.9)" : "rgba(15,23,42,0.6)"}
+            />
+          </svg>
+        </div>
+
         {theme === "dark" && (
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-pattern-geo bg-geo opacity-[0.14]" />
@@ -349,6 +370,33 @@ const HeroIllustration = ({ theme }: { theme: Theme }) => {
           </>
         )}
 
+        {/* Light-mode mini-card mirrored for dark mode as well (with dark styling). */}
+        {theme === "dark" && (
+          <div className="absolute inset-x-12 bottom-8 flex items-center justify-center">
+            <div className="glass-panel card-tilt relative flex h-40 w-full max-w-lg items-center gap-6 px-7 py-6">
+              <div className="card-tilt-inner relative h-24 w-24 rounded-full bg-gradient-orbit p-[3px] shadow-lg shadow-emerald-500/40">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-950">
+                  <span className="text-3xl font-semibold text-emerald-200">
+                    :)
+                  </span>
+                </div>
+              </div>
+              <div className="card-tilt-inner space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300/90">
+                  Light of Celebration
+                </p>
+                <p className="font-display text-2xl text-slate-50">
+                  A joyful Eid under soft daylight.
+                </p>
+                <p className="text-xs text-slate-300/90">
+                  Families gather, children laugh, and gratitude fills the
+                  courtyards.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {theme === "dark" && (
           <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
             <div className="absolute inset-x-10 bottom-6 flex items-end justify-between gap-4 text-slate-200/90">
@@ -387,17 +435,102 @@ const EidPage = () => {
   const [displayedName, setDisplayedName] = useState<string | null>(null);
   const [showGreeting, setShowGreeting] = useState(false);
   const [playMusic, setPlayMusic] = useState(false);
+  const [audioNotice, setAudioNotice] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
+  const [cardVariant, setCardVariant] = useState(0);
+
+  const cardVariants = [
+    {
+      sticker: "✨",
+      label: "Glow",
+      message:
+        "May your Eid sparkle with mercy, laughter, and sweet surprises."
+    },
+    {
+      sticker: "🕌",
+      label: "Mosque",
+      message: "May your prayers be answered and your heart feel at home."
+    },
+    {
+      sticker: "🌙",
+      label: "Crescent",
+      message: "May the crescent bring calm nights and radiant mornings."
+    },
+    {
+      sticker: "🎁",
+      label: "Gift",
+      message: "May this Eid deliver blessings you didn't even ask for."
+    },
+    {
+      sticker: "🕯️",
+      label: "Lantern",
+      message: "May your path be lit with guidance and gentle hope."
+    },
+    {
+      sticker: "💛",
+      label: "Gratitude",
+      message: "May gratitude fill your chest and joy fill your home."
+    }
+  ] as const;
+
+  useEffect(() => {
+    setCardVariant(Math.floor(Math.random() * cardVariants.length));
+  }, [cardVariants.length]);
 
   useEffect(() => {
     if (!audioRef.current) return;
     if (playMusic) {
-      audioRef.current
-        .play()
-        .catch(() => setPlayMusic(false));
+      const a = audioRef.current;
+      a.muted = false;
+      a.volume = 0.6;
+      setAudioNotice(null);
+      debugLog({
+        hypothesisId: "H3",
+        location: "app/page.tsx:audio:play",
+        message: "Attempting to play ambience audio",
+        data: {
+          readyState: a.readyState,
+          currentTime: a.currentTime,
+          src: a.currentSrc || a.src,
+          volume: a.volume,
+          muted: a.muted
+        }
+      });
+      a.load();
+      a.play()
+        .then(() => {
+          debugLog({
+            hypothesisId: "H3",
+            location: "app/page.tsx:audio:play",
+            message: "Audio play() resolved",
+            data: { currentTime: a.currentTime }
+          });
+        })
+        .catch((err) => {
+          setPlayMusic(false);
+          setAudioNotice(
+            "Audio blocked or unavailable. Try toggling again, or check your browser sound settings."
+          );
+          debugLog({
+            hypothesisId: "H3",
+            location: "app/page.tsx:audio:play",
+            message: "Audio play() rejected",
+            data: {
+              name: (err as Error)?.name,
+              message: (err as Error)?.message
+            }
+          });
+        });
     } else {
-      audioRef.current.pause();
+      const a = audioRef.current;
+      a.pause();
+      debugLog({
+        hypothesisId: "H3",
+        location: "app/page.tsx:audio:pause",
+        message: "Paused ambience audio",
+        data: { currentTime: a.currentTime }
+      });
     }
   }, [playMusic]);
 
@@ -414,6 +547,57 @@ const EidPage = () => {
         htmlHasDarkClass: document.documentElement.classList.contains("dark"),
         mainColor: cs.color,
         mainBackground: cs.backgroundColor
+      }
+    });
+  }, [theme]);
+
+  useEffect(() => {
+    if (theme !== "light") return;
+    const root = mainRef.current;
+    if (!root) return;
+
+    const all = Array.from(
+      root.querySelectorAll<HTMLElement>("p, h1, h2, h3, a, label, li, span")
+    );
+    const suspicious: Array<{
+      tag: string;
+      text: string;
+      color: string;
+      bg: string;
+      className: string;
+    }> = [];
+
+    for (const node of all) {
+      const text = (node.textContent ?? "").trim().replace(/\s+/g, " ");
+      if (!text) continue;
+      const cs = window.getComputedStyle(node);
+      const color = cs.color;
+      const bg = cs.backgroundColor;
+      // Flag very light text colors in light mode (rough heuristic).
+      const m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+      if (!m) continue;
+      const r = Number(m[1]);
+      const g = Number(m[2]);
+      const b = Number(m[3]);
+      if (r > 190 && g > 190 && b > 190) {
+        suspicious.push({
+          tag: node.tagName.toLowerCase(),
+          text: text.slice(0, 60),
+          color,
+          bg,
+          className: node.className
+        });
+        if (suspicious.length >= 8) break;
+      }
+    }
+
+    debugLog({
+      hypothesisId: "H4",
+      location: "app/page.tsx:EidPage:lightContrastScan",
+      message: "Light-mode scan for near-white text",
+      data: {
+        found: suspicious.length,
+        samples: suspicious
       }
     });
   }, [theme]);
@@ -435,9 +619,8 @@ const EidPage = () => {
           : "bg-gradient-to-b from-amber-50 via-slate-50 to-emerald-50 text-slate-900"
       }`}
     >
-      <TailwindProbe />
-      <StarField />
-      <div className="noise-overlay" />
+      {theme === "dark" ? <StarField /> : null}
+      <div className={`noise-overlay ${theme === "light" ? "opacity-[0.02]" : ""}`} />
 
       <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-transparent dark:opacity-100 opacity-0 transition-opacity duration-700" />
 
@@ -459,7 +642,7 @@ const EidPage = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => setPlayMusic((p) => !p)}
@@ -476,10 +659,10 @@ const EidPage = () => {
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle day and night mode"
-              className="group relative flex h-9 w-16 items-center rounded-full border border-slate-300 bg-white/70 px-1.5 shadow-inner shadow-slate-900/10 transition-colors dark:border-slate-600/80 dark:bg-slate-900/80 dark:shadow-black/60"
+              className="group relative flex h-9 w-[72px] items-center rounded-full border border-slate-300 bg-white/70 px-1.5 shadow-inner shadow-slate-900/10 transition-colors dark:border-slate-600/80 dark:bg-slate-900/80 dark:shadow-black/60"
             >
               <div
-                className={`absolute inset-y-1 w-1/2 rounded-full bg-gradient-to-tr from-emerald-400 via-emerald-300 to-amber-200 shadow-md shadow-emerald-400/50 transition-transform duration-500 ${
+                className={`absolute inset-y-1 left-1 w-[32px] rounded-full bg-gradient-to-tr from-emerald-400 via-emerald-300 to-amber-200 shadow-md shadow-emerald-400/50 transition-transform duration-500 ${
                   theme === "dark"
                     ? "translate-x-0"
                     : "translate-x-full bg-gradient-to-tr from-amber-300 via-amber-200 to-sky-200 shadow-amber-400/40"
@@ -495,9 +678,45 @@ const EidPage = () => {
         <audio
           ref={audioRef}
           loop
+          preload="auto"
+          crossOrigin="anonymous"
           src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1fd7fb9f0e.mp3?filename=night-ambience-124900.mp3"
+          onError={() => {
+            setAudioNotice(
+              "Audio failed to load. Check your connection or try again."
+            );
+            debugLog({
+              hypothesisId: "H3",
+              location: "app/page.tsx:audio:onError",
+              message: "Audio element error event",
+              data: {
+                src: audioRef.current?.currentSrc || audioRef.current?.src,
+                networkState: audioRef.current?.networkState,
+                readyState: audioRef.current?.readyState
+              }
+            });
+          }}
+          onCanPlay={() => {
+            debugLog({
+              hypothesisId: "H3",
+              location: "app/page.tsx:audio:onCanPlay",
+              message: "Audio can play",
+              data: {
+                readyState: audioRef.current?.readyState,
+                duration: audioRef.current?.duration
+              }
+            });
+          }}
         />
       </header>
+
+      {audioNotice ? (
+        <div className="mx-auto w-full max-w-6xl px-5 pt-4">
+          <div className="rounded-2xl border border-amber-300/40 bg-amber-200/40 px-4 py-3 text-xs text-amber-950 shadow-sm backdrop-blur-xl dark:border-amber-300/25 dark:bg-amber-300/10 dark:text-amber-100">
+            {audioNotice}
+          </div>
+        </div>
+      ) : null}
 
       <section
         id="hero"
@@ -617,10 +836,10 @@ const EidPage = () => {
         className="relative mx-auto max-w-6xl px-5 pb-16 md:pb-20"
       >
         <div className="mb-7 flex items-center justify-between gap-3">
-          <h2 className="font-display text-xl text-emerald-200 md:text-2xl">
+          <h2 className="font-display text-xl text-emerald-950 dark:text-emerald-200 md:text-2xl">
             Wishes drifting on lantern light
           </h2>
-          <p className="text-xs text-slate-400 md:text-[0.7rem]">
+          <p className="text-xs text-slate-600 dark:text-slate-400 md:text-[0.7rem]">
             Scroll slowly — let each dua settle in your heart.
           </p>
         </div>
@@ -641,11 +860,11 @@ const EidPage = () => {
           ].map((wish) => (
             <article
               key={wish.title}
-              className="glass-panel relative h-full border-white/10 bg-slate-900/40 p-5 text-sm text-slate-100"
+              className="relative h-full rounded-3xl border border-slate-200/70 bg-white/75 p-5 text-sm text-slate-900 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
             >
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-amber-300/10" />
               <div className="relative space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-emerald-300">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-emerald-700 dark:text-emerald-300">
                   {wish.title}
                 </p>
                 <p>{wish.body}</p>
@@ -659,15 +878,15 @@ const EidPage = () => {
         id="quotes"
         className="relative mx-auto max-w-6xl px-5 pb-16 md:pb-20"
       >
-        <div className="glass-panel relative overflow-hidden border-white/10 bg-slate-900/40 px-6 py-7 md:px-8 md:py-9">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-white/75 px-6 py-7 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/40 md:px-8 md:py-9">
           <div className="pointer-events-none absolute -left-16 top-0 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl" />
           <div className="pointer-events-none absolute -right-20 bottom-0 h-48 w-48 rounded-full bg-amber-300/25 blur-3xl" />
           <div className="relative grid gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:items-center">
             <div className="space-y-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-300">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700 dark:text-emerald-300">
                 Reflections under the crescent
               </p>
-              <blockquote className="font-display text-xl leading-relaxed text-slate-50 md:text-2xl">
+              <blockquote className="font-display text-xl leading-relaxed text-slate-950 dark:text-slate-50 md:text-2xl">
                 “Eid is not the clothes we wear or the feast we share. It is
                 the quiet moment of gratitude, when the heart whispers,{' '}
                 <span className="bg-gradient-to-r from-emerald-300 via-amber-200 to-sky-300 bg-clip-text text-transparent">
@@ -675,7 +894,9 @@ const EidPage = () => {
                 </span>
                 ”
               </blockquote>
-              <p className="text-xs text-slate-400">— A dua carried by the wind</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                — A dua carried by the wind
+              </p>
             </div>
             <div className="glass-panel-light relative overflow-hidden border-emerald-100/70 bg-white/75 p-5 text-sm text-emerald-950">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-400/10 via-transparent to-amber-300/20" />
@@ -701,10 +922,10 @@ const EidPage = () => {
       >
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-xl text-emerald-200 md:text-2xl">
+            <h2 className="font-display text-xl text-emerald-950 dark:text-emerald-200 md:text-2xl">
               Send a shimmering Eid card
             </h2>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
               Capture your personalized greeting as a shareable digital card.
             </p>
           </div>
@@ -725,7 +946,14 @@ const EidPage = () => {
                       <span className="rounded-full bg-emerald-500/20 px-2 py-1 font-semibold text-emerald-200">
                         Eid Mubarak
                       </span>
-                      <span>Digital Card</span>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-slate-200">
+                          {cardVariants[cardVariant]?.label}
+                        </span>
+                        <span className="text-base leading-none">
+                          {cardVariants[cardVariant]?.sticker}
+                        </span>
+                      </span>
                     </div>
                     <div className="space-y-3 text-center">
                       <p className="font-display text-2xl text-emerald-100">
@@ -734,9 +962,7 @@ const EidPage = () => {
                           : "Eid Mubarak, dear soul!"}
                       </p>
                       <p className="mx-auto max-w-md text-xs text-slate-300">
-                        May your heart be as light as lanterns in the night,
-                        your home as warm as shared sweets, and your path as
-                        bright as the crescent moon.
+                        {cardVariants[cardVariant]?.message}
                       </p>
                     </div>
                     <p className="text-[10px] text-slate-500">
@@ -746,16 +972,26 @@ const EidPage = () => {
                   </div>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setCardVariant((v) => (v + 1) % cardVariants.length)
+                }
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-slate-100 transition hover:bg-white/10"
+              >
+                Shuffle sticker & message
+                <span aria-hidden="true">↻</span>
+              </button>
             </div>
           </div>
 
-          <div className="space-y-4 text-sm text-slate-200">
+          <div className="space-y-4 text-sm text-slate-700 dark:text-slate-200">
             <p>
               You can quickly share this greeting by taking a screenshot of the
               live preview, or by sharing this page with your loved ones and
               letting them write their own names into the sky.
             </p>
-            <ol className="space-y-1 text-xs text-slate-300">
+            <ol className="space-y-1 text-xs text-slate-700/90 dark:text-slate-300">
               <li>1. Enter a name in the greeting panel above.</li>
               <li>2. Capture a screenshot of the card preview.</li>
               <li>
@@ -766,7 +1002,7 @@ const EidPage = () => {
         </div>
       </section>
 
-      <footer className="border-t border-slate-800/60 bg-slate-950/80 px-5 py-6 text-center text-[11px] text-slate-500">
+      <footer className="border-t border-slate-200/70 bg-white/70 px-5 py-6 text-center text-[11px] text-slate-600 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80 dark:text-slate-500">
         <p>
           May your Eid be filled with light, mercy, and gentle surprises. Eid
           Mubarak.

@@ -37,7 +37,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${cairo.variable} ${plusJakarta.variable}`}
       suppressHydrationWarning
     >
-      <body className="font-sans antialiased bg-night-900 text-slate-100">
+      <body className="antialiased">
         {children}
       </body>
     </html>
