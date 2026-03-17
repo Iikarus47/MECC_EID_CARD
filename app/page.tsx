@@ -538,6 +538,37 @@ const EidPage = () => {
   }, [stickerSources.length]);
 
   useEffect(() => {
+    // Lock scroll while intro cinematic is visible.
+    const root = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = root.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    if (showIntro) {
+      root.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      debugLog({
+        hypothesisId: "H2",
+        location: "app/page.tsx:scrollLock",
+        message: "Scroll locked for intro",
+        data: {}
+      });
+    } else {
+      root.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      debugLog({
+        hypothesisId: "H2",
+        location: "app/page.tsx:scrollLock",
+        message: "Scroll unlocked after intro",
+        data: {}
+      });
+    }
+    return () => {
+      root.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, [showIntro]);
+
+  useEffect(() => {
     if (!audioRef.current) return;
     if (playMusic) {
       const a = audioRef.current;
@@ -691,8 +722,7 @@ const EidPage = () => {
           aria-label="Eid Mubarak welcome"
         >
           <div
-            className="absolute inset-0 bg-slate-950/50 backdrop-blur-2xl dark:bg-slate-950/70"
-            onClick={() => setShowIntro(false)}
+            className="absolute inset-0 bg-slate-950/55 backdrop-blur-2xl dark:bg-slate-950/75"
           />
           <div className="relative w-full max-w-xl overflow-hidden rounded-[32px] border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl dark:bg-white/5">
             <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-liquid-gold opacity-80 blur-3xl" />
@@ -708,24 +738,13 @@ const EidPage = () => {
                 May your heart feel lighter than lanterns, and your home glow with
                 mercy, laughter, and gratitude.
               </p>
-              <div className="mx-auto flex max-w-md items-center justify-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowIntro(false);
-                    const el = document.getElementById("card");
-                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  className="rounded-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40"
-                >
-                  Open my Eid card
-                </button>
+              <div className="mx-auto max-w-md pt-2">
                 <button
                   type="button"
                   onClick={() => setShowIntro(false)}
-                  className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-50"
+                  className="w-full rounded-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 transition-transform hover:scale-[1.01]"
                 >
-                  Continue
+                  Click to continue
                 </button>
               </div>
             </div>
@@ -743,7 +762,7 @@ const EidPage = () => {
             />
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700/80 dark:text-emerald-300/80">
-                Celestial Celebration
+                Festive Eid Card
               </p>
             </div>
           </div>
@@ -824,138 +843,73 @@ const EidPage = () => {
         </div>
       ) : null}
 
-      <section className="relative mx-auto max-w-6xl px-5 pt-10 pb-12 md:pt-12 md:pb-16">
-        <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl dark:bg-white/5">
+      <section className="relative mx-auto flex min-h-[calc(100vh-88px)] max-w-6xl items-center px-5 py-10 md:py-16">
+        <div className="relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-7 shadow-2xl backdrop-blur-2xl">
           <div className="pointer-events-none absolute inset-0 bg-liquid-gold opacity-60 blur-3xl" />
           <div className="pointer-events-none absolute inset-0 bg-pattern-geo bg-geo opacity-[0.14]" />
-          <div className="relative grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
-            <div className="space-y-4">
+          <div className="relative grid gap-8 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] md:items-center">
+            <div className="space-y-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700/90 dark:text-emerald-300/80">
-                Your Eid card studio
+                A personal Eid wish
               </p>
-              <h1 className="calligraphy font-display text-4xl leading-tight text-slate-950 dark:text-slate-50 sm:text-5xl">
+              <h1 className="calligraphy font-display text-5xl leading-[1.05] text-slate-950 dark:text-slate-50 sm:text-6xl">
                 Eid Mubarak
-                <span className="block bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300 bg-clip-text text-transparent">
+                <span className="mt-2 block bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300 bg-clip-text text-transparent">
                   رَمَضَانُ مَغْفِرَةٍ وَرَحْمَةٍ
                 </span>
               </h1>
-              <p className="max-w-xl text-sm text-slate-700 dark:text-slate-300/90">
-                May Allah accept your fasting, forgive your sins, and fill your home with
-                peace. May your Eid be a new beginning of barakah, love, and answered duas.
+              <p className="max-w-2xl text-base text-slate-700 dark:text-slate-300/90">
+                May Allah accept your fasting, forgive your sins, and fill your home with peace.
+                May your Eid be a new beginning of barakah, love, and answered duas.
               </p>
 
               <form onSubmit={onSubmit} className="space-y-3">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300/80">
-                  Enter a name for the card
+                <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200">
+                  Enter your name
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your beautiful name"
-                    className="min-w-[220px] flex-1 rounded-2xl border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-slate-500/60 dark:bg-slate-900/60 dark:text-slate-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/40"
+                    className="min-w-[240px] flex-1 rounded-2xl border border-slate-300 bg-white/85 px-4 py-3 text-base text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-slate-500/60 dark:bg-slate-900/60 dark:text-slate-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/40"
                   />
                   <button
                     type="submit"
-                    className="rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/40"
+                    className="rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40"
                   >
-                    Apply name
+                    Reveal my wish
                   </button>
                 </div>
               </form>
-
-              <div
-                aria-live="polite"
-                className="relative overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/70 p-4 text-sm text-emerald-950 dark:border-emerald-200/20 dark:bg-slate-950/60 dark:text-emerald-100"
-              >
-                <Fireworks active={showGreeting && !!displayedName} />
-                {displayedName ? (
-                  <div
-                    className={`space-y-1 transition-all duration-500 ${
-                      showGreeting
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-4 opacity-0"
-                    }`}
-                  >
-                    <p className="font-display text-lg text-emerald-900 dark:text-emerald-200">
-                      Eid Mubarak, {displayedName}!
-                    </p>
-                    <p className="text-xs text-emerald-900/90 dark:text-emerald-100/90">
-                      May your days glow with iman, your nights with serenity, and your heart with gratitude.
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-700 dark:text-slate-300/90">
-                    Apply a name to trigger a celebratory greeting.
-                  </p>
-                )}
-              </div>
             </div>
 
-            <div id="card" className="relative">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-1 shadow-2xl">
-                <div className="relative h-full w-full rounded-2xl bg-slate-950/80 p-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-amber-300/12" />
-                  <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-400/20 blur-3xl" />
-                  <div className="absolute -left-14 -bottom-20 h-56 w-56 rounded-full bg-amber-300/20 blur-3xl" />
-
-                  <img
-                    src={stickerSrc}
-                    alt=""
-                    className="pointer-events-none absolute -right-2 -top-2 h-20 w-20 rotate-6 opacity-90 drop-shadow-[0_18px_35px_rgba(0,0,0,0.55)]"
-                  />
-
-                  <div className="relative flex h-full flex-col justify-between">
-                    <div className="flex items-center justify-between text-[11px] text-slate-300">
-                      <span className="rounded-full bg-emerald-500/20 px-2 py-1 font-semibold text-emerald-200">
-                        Eid Mubarak
-                      </span>
-                      <span className="inline-flex items-center gap-2">
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-slate-200">
-                          {cardVariants[cardVariant]?.label}
-                        </span>
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 text-center">
-                      <p className="font-display text-2xl text-emerald-100">
-                        {displayedName
-                          ? `Eid Mubarak, ${displayedName}!`
-                          : "Eid Mubarak, dear soul!"}
-                      </p>
-                      <p className="mx-auto max-w-md text-xs text-slate-300">
-                        {cardVariants[cardVariant]?.message}
-                      </p>
-                      <div className="mx-auto flex w-fit items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-200">
-                        <span aria-hidden="true">🕌</span>
-                        <span>MECC Eid Card</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-end justify-between gap-3">
-                      <p className="text-[10px] text-slate-500">
-                        Share this blessing with someone you love.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCardVariant((v) => (v + 1) % cardVariants.length);
-                          setStickerSrc(
-                            stickerSources[
-                              Math.floor(Math.random() * stickerSources.length)
-                            ]
-                          );
-                        }}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-slate-100 transition hover:bg-white/10"
-                      >
-                        Shuffle
-                        <span aria-hidden="true">↻</span>
-                      </button>
-                    </div>
-                  </div>
+            <div className="relative overflow-hidden rounded-[28px] border border-emerald-200/40 bg-white/70 p-6 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/45">
+              <Fireworks active={showGreeting && !!displayedName} />
+              <div aria-live="polite" className="relative space-y-4">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700 dark:text-emerald-200">
+                  <span aria-hidden="true">🌙</span>
+                  Blessing
                 </div>
+                <p
+                  className={`font-display text-3xl leading-tight text-emerald-950 dark:text-emerald-100 transition-all duration-500 ${
+                    displayedName && showGreeting
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-3 opacity-75"
+                  }`}
+                >
+                  {displayedName ? `Eid Mubarak, ${displayedName}!` : "Eid Mubarak!"}
+                </p>
+                <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200/90">
+                  {displayedName
+                    ? "May Allah shower you with mercy, grant you lasting happiness, and make every prayer you whispered in Ramadan bloom into beautiful answers."
+                    : "Enter your name to receive a personal dua written with warmth and gratitude."}
+                </p>
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  May your Eid be gentle, bright, and deeply meaningful.
+                </p>
               </div>
-
             </div>
           </div>
         </div>
@@ -1061,87 +1015,57 @@ const EidPage = () => {
       </section>
 
       <section
-        id="card"
+        id="about"
         className="relative mx-auto max-w-6xl px-5 pb-20 md:pb-24"
       >
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="font-display text-xl text-emerald-950 dark:text-emerald-200 md:text-2xl">
-              Send a shimmering Eid card
-            </h2>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-              Capture your personalized greeting as a shareable digital card.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-center">
-          <div className="glass-panel relative overflow-hidden border-white/10 bg-slate-900/60 p-6 text-sm text-slate-100">
-            <div className="pointer-events-none absolute inset-0 bg-liquid-gold opacity-60 blur-3xl" />
-            <div className="relative space-y-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-300">
-                Live preview
-              </p>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-1">
-                <div className="relative h-full w-full rounded-2xl bg-slate-950/80 p-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-amber-300/12" />
-                  <div className="relative flex h-full flex-col justify-between">
-                    <div className="flex items-center justify-between text-[11px] text-slate-300">
-                      <span className="rounded-full bg-emerald-500/20 px-2 py-1 font-semibold text-emerald-200">
-                        Eid Mubarak
-                      </span>
-                      <span className="inline-flex items-center gap-2">
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-slate-200">
-                          {cardVariants[cardVariant]?.label}
-                        </span>
-                        <span className="text-base leading-none">
-                          {cardVariants[cardVariant]?.sticker}
-                        </span>
-                      </span>
-                    </div>
-                    <div className="space-y-3 text-center">
-                      <p className="font-display text-2xl text-emerald-100">
-                        {displayedName
-                          ? `Eid Mubarak, ${displayedName}!`
-                          : "Eid Mubarak, dear soul!"}
-                      </p>
-                      <p className="mx-auto max-w-md text-xs text-slate-300">
-                        {cardVariants[cardVariant]?.message}
-                      </p>
-                    </div>
-                    <p className="text-[10px] text-slate-500">
-                      Share this blessing with someone whose presence lights up
-                      your Eid.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() =>
-                  setCardVariant((v) => (v + 1) % cardVariants.length)
-                }
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-slate-100 transition hover:bg-white/10"
-              >
-                Shuffle sticker & message
-                <span aria-hidden="true">↻</span>
-              </button>
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-200/70 bg-white/70 p-7 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/45">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-emerald-400/15 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-16 h-64 w-64 rounded-full bg-amber-300/15 blur-3xl" />
+          <div className="relative grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center">
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900/20 p-2">
+              <img
+                src="/assets/about/sami.png"
+                alt="Sayeem Shahriar Sami"
+                className="h-auto w-full rounded-[22px] object-cover"
+              />
             </div>
-          </div>
-
-          <div className="space-y-4 text-sm text-slate-700 dark:text-slate-200">
-            <p>
-              You can quickly share this greeting by taking a screenshot of the
-              live preview, or by sharing this page with your loved ones and
-              letting them write their own names into the sky.
-            </p>
-            <ol className="space-y-1 text-xs text-slate-700/90 dark:text-slate-300">
-              <li>1. Enter a name in the greeting panel above.</li>
-              <li>2. Capture a screenshot of the card preview.</li>
-              <li>
-                3. Share it via your favourite app — the dua travels with it.
-              </li>
-            </ol>
+            <div className="space-y-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700 dark:text-emerald-300">
+                About
+              </p>
+              <h2 className="font-display text-2xl text-slate-950 dark:text-slate-50 md:text-3xl">
+                SAYEEM SHAHRIAR SAMI
+              </h2>
+              <p className="text-sm text-slate-700 dark:text-slate-300/90">
+                CSE 7th, Mymensingh Engineering College.
+              </p>
+              <div className="rounded-2xl border border-emerald-200/60 bg-white/70 p-4 text-sm text-slate-900 backdrop-blur-xl dark:border-emerald-200/20 dark:bg-slate-950/40 dark:text-slate-100">
+                <p className="font-display text-lg">Eid wish from me</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-200/90">
+                  May Allah accept all your good deeds, heal what your heart hides,
+                  and grant you a life filled with peace, halal success, and people who love you for the sake of Allah.
+                  Eid Mubarak.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3 pt-1 text-sm">
+                <a
+                  href="https://github.com/Iikarus47/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-4 py-2 font-semibold text-slate-800 transition hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10"
+                >
+                  GitHub
+                </a>
+                <a
+                  href="https://www.facebook.com/sami.ikarus1814"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-4 py-2 font-semibold text-slate-800 transition hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10"
+                >
+                  Facebook
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
