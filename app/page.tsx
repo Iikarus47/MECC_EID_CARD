@@ -388,6 +388,7 @@ const EidPage = () => {
   const [showGreeting, setShowGreeting] = useState(false);
   const [playMusic, setPlayMusic] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mainRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -400,6 +401,23 @@ const EidPage = () => {
     }
   }, [playMusic]);
 
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const cs = window.getComputedStyle(el);
+    debugLog({
+      hypothesisId: "H4",
+      location: "app/page.tsx:EidPage:themeProbe",
+      message: "Computed main text color after theme change",
+      data: {
+        theme,
+        htmlHasDarkClass: document.documentElement.classList.contains("dark"),
+        mainColor: cs.color,
+        mainBackground: cs.backgroundColor
+      }
+    });
+  }, [theme]);
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -410,6 +428,7 @@ const EidPage = () => {
 
   return (
     <main
+      ref={mainRef}
       className={`relative min-h-screen overflow-x-hidden transition-colors duration-700 ${
         theme === "dark"
           ? "bg-night-900 text-slate-100"
@@ -422,7 +441,7 @@ const EidPage = () => {
 
       <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-transparent dark:opacity-100 opacity-0 transition-opacity duration-700" />
 
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-gradient-to-b from-slate-950/75 via-slate-950/60 to-transparent px-5 py-4 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/70 dark:via-slate-950/40 dark:to-slate-950/10">
+      <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/75 px-5 py-4 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/70">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 via-emerald-400 to-amber-300 shadow-lg shadow-emerald-500/40">
@@ -431,10 +450,10 @@ const EidPage = () => {
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-300/80 dark:text-emerald-300/80 text-emerald-700/80">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700/80 dark:text-emerald-300/80">
                 Celestial Celebration
               </p>
-              <p className="font-display text-sm text-slate-50 dark:text-slate-50 text-slate-900">
+              <p className="font-display text-sm text-slate-900 dark:text-slate-50">
                 Night of Light & Gratitude
               </p>
             </div>
@@ -446,8 +465,8 @@ const EidPage = () => {
               onClick={() => setPlayMusic((p) => !p)}
               className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-all ${
                 playMusic
-                  ? "border-emerald-400/70 bg-emerald-500/20 text-emerald-100 shadow-emerald-500/30"
-                  : "border-slate-600/70 bg-slate-900/70 text-slate-200"
+                  ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-900 shadow-emerald-500/20 dark:border-emerald-400/70 dark:bg-emerald-500/20 dark:text-emerald-100"
+                  : "border-slate-300 bg-white/70 text-slate-800 dark:border-slate-600/70 dark:bg-slate-900/70 dark:text-slate-200"
               }`}
             >
               <MusicalNoteIcon className="h-4 w-4" />
@@ -457,7 +476,7 @@ const EidPage = () => {
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle day and night mode"
-              className="group relative flex h-9 w-16 items-center rounded-full border border-slate-600/70 bg-slate-900/80 px-1.5 shadow-inner shadow-black/60 transition-colors dark:border-slate-600/80 dark:bg-slate-900/80"
+              className="group relative flex h-9 w-16 items-center rounded-full border border-slate-300 bg-white/70 px-1.5 shadow-inner shadow-slate-900/10 transition-colors dark:border-slate-600/80 dark:bg-slate-900/80 dark:shadow-black/60"
             >
               <div
                 className={`absolute inset-y-1 w-1/2 rounded-full bg-gradient-to-tr from-emerald-400 via-emerald-300 to-amber-200 shadow-md shadow-emerald-400/50 transition-transform duration-500 ${
@@ -466,7 +485,7 @@ const EidPage = () => {
                     : "translate-x-full bg-gradient-to-tr from-amber-300 via-amber-200 to-sky-200 shadow-amber-400/40"
                 }`}
               />
-              <div className="relative z-10 flex w-full items-center justify-between px-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-300">
+              <div className="relative z-10 flex w-full items-center justify-between px-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300">
                 <MoonIcon className="h-3.5 w-3.5" />
                 <SunIcon className="h-3.5 w-3.5" />
               </div>
@@ -488,18 +507,18 @@ const EidPage = () => {
 
         <div className="relative grid w-full gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:items-center">
           <div className="space-y-5 md:space-y-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-200 shadow shadow-emerald-500/30">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-600/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-950 shadow shadow-emerald-500/10 dark:border-emerald-400/40 dark:text-emerald-200 dark:shadow-emerald-500/30">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(74,222,128,1)]" />
               Eid under a sky of mercy
             </div>
             <div className="space-y-3">
-              <h1 className="calligraphy font-display text-4xl leading-tight text-slate-50 sm:text-5xl md:text-[3.25rem]">
+              <h1 className="calligraphy font-display text-4xl leading-tight text-slate-950 dark:text-slate-50 sm:text-5xl md:text-[3.25rem]">
                 Eid Mubarak
                 <span className="block bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300 bg-clip-text text-transparent">
                   ليلة من نور وامتنان
                 </span>
               </h1>
-              <p className="max-w-xl text-sm text-slate-300/90 md:text-[0.95rem]">
+              <p className="max-w-xl text-sm text-slate-700 md:text-[0.95rem] dark:text-slate-300/90">
                 Bask under a celestial Eid night where lanterns float, stars
                 whisper duas, and every heartbeat echoes gratitude. Enter your
                 name and watch the sky celebrate you.
@@ -514,7 +533,7 @@ const EidPage = () => {
               </a>
               <a
                 href="#card"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-600/70 bg-slate-900/60 px-4 py-2 text-xs font-medium text-slate-200"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-xs font-medium text-slate-800 dark:border-slate-600/70 dark:bg-slate-900/60 dark:text-slate-200"
               >
                 Create a digital Eid card
               </a>
@@ -523,20 +542,24 @@ const EidPage = () => {
 
           <div
             id="greeting"
-            className="relative glass-panel w-full max-w-md justify-self-end border-white/10 bg-white/5 p-5 shadow-glass-soft backdrop-blur-2xl"
+            className={`relative w-full max-w-md justify-self-end p-5 shadow-glass-soft backdrop-blur-2xl ${
+              theme === "dark"
+                ? "glass-panel border-white/10 bg-white/5"
+                : "glass-panel-light border-slate-200/70 bg-white/75"
+            }`}
           >
             <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-liquid-gold opacity-60 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-10 left-10 h-28 w-40 rounded-full bg-emerald-500/30 blur-3xl" />
 
             <div className="relative space-y-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300/80">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700/90 dark:text-emerald-300/80">
                 Your luminous greeting
               </p>
-              <p className="font-display text-xl text-slate-50">
+              <p className="font-display text-xl text-slate-950 dark:text-slate-50">
                 Let the sky whisper your name in duas.
               </p>
               <form onSubmit={onSubmit} className="mt-4 space-y-3">
-                <label className="block text-xs font-medium text-slate-300/80">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300/80">
                   Type your name to receive a personalized Eid blessing
                 </label>
                 <div className="flex gap-2">
@@ -544,7 +567,7 @@ const EidPage = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your beautiful name"
-                    className="flex-1 rounded-2xl border border-slate-500/60 bg-slate-900/60 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    className="flex-1 rounded-2xl border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-slate-500/60 dark:bg-slate-900/60 dark:text-slate-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/40"
                   />
                   <button
                     type="submit"
@@ -557,7 +580,7 @@ const EidPage = () => {
 
               <div
                 aria-live="polite"
-                className="relative mt-4 min-h-[76px] overflow-hidden rounded-2xl border border-emerald-200/20 bg-slate-950/60 p-4 text-sm text-emerald-100"
+                className="relative mt-4 min-h-[76px] overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/70 p-4 text-sm text-emerald-950 dark:border-emerald-200/20 dark:bg-slate-950/60 dark:text-emerald-100"
               >
                 <Fireworks active={showGreeting && !!displayedName} />
                 {displayedName ? (
@@ -568,17 +591,17 @@ const EidPage = () => {
                         : "translate-y-4 opacity-0"
                     }`}
                   >
-                    <p className="font-display text-lg text-emerald-200">
+                    <p className="font-display text-lg text-emerald-900 dark:text-emerald-200">
                       Eid Mubarak, {displayedName}!
                     </p>
-                    <p className="text-xs text-emerald-100/90">
+                    <p className="text-xs text-emerald-900/90 dark:text-emerald-100/90">
                       May your days glow with iman, your nights with serenity,
                       and your heart with endless gratitude. May every dua you
                       whispered in the quiet of the night find its way to mercy.
                     </p>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-300/90">
+                  <p className="text-xs text-slate-700 dark:text-slate-300/90">
                     Your greeting will shimmer here with fireworks the moment
                     you share your name.
                   </p>
