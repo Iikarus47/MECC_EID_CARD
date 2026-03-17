@@ -58,10 +58,6 @@ const SunSparkIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Debug mode instrumentation (disabled for production).
-// Keeping a no-op here preserves call sites safely without runtime cost.
-const debugLog = (..._args: unknown[]) => {};
-
 const useTheme = (): [Theme, () => void] => {
   const [theme, setTheme] = useState<Theme>("dark");
 
@@ -362,27 +358,6 @@ const EidPage = () => {
             setAudioNotice(
               "Audio failed to load. Check your connection or try again."
             );
-            debugLog({
-              hypothesisId: "H3",
-              location: "app/page.tsx:audio:onError",
-              message: "Audio element error event",
-              data: {
-                src: audioRef.current?.currentSrc || audioRef.current?.src,
-                networkState: audioRef.current?.networkState,
-                readyState: audioRef.current?.readyState
-              }
-            });
-          }}
-          onCanPlay={() => {
-            debugLog({
-              hypothesisId: "H3",
-              location: "app/page.tsx:audio:onCanPlay",
-              message: "Audio can play",
-              data: {
-                readyState: audioRef.current?.readyState,
-                duration: audioRef.current?.duration
-              }
-            });
           }}
         />
       </header>
@@ -622,11 +597,23 @@ const EidPage = () => {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200/70 bg-white/70 px-5 py-6 text-center text-[11px] text-slate-600 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80 dark:text-slate-500">
-        <p>
-          May your Eid be filled with light, mercy, and gentle surprises. Eid
-          Mubarak.
-        </p>
+      <footer className="border-t border-slate-200/70 bg-white/70 px-5 py-7 text-center text-[11px] text-slate-700 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80 dark:text-slate-400">
+        <div className="mx-auto max-w-6xl space-y-2">
+          <p className="text-slate-700 dark:text-slate-300">
+            May your Eid be filled with light, mercy, and gentle surprises. Eid
+            Mubarak.
+          </p>
+          <p className="text-slate-600 dark:text-slate-500">
+            © {new Date().getFullYear()}{" "}
+            <span className="font-semibold text-slate-800 dark:text-slate-200">
+              Sayeem Shahriar Sami
+            </span>
+            . All rights reserved.
+          </p>
+          <p className="text-slate-500 dark:text-slate-600">
+            Built with Next.js, React, Tailwind CSS.
+          </p>
+        </div>
       </footer>
     </main>
   );
