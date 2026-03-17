@@ -9,5 +9,4 @@ debug-*.log
 *.jpeg
 !.gitignore
 
-# Public assets: commit design assets; keep personal audio optional
-public/assets/music/ambient.mp3
+
