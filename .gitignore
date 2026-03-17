@@ -1,0 +1,13 @@
+.next/
+node_modules/
+.cursor/
+debug-*.log
+.tmp_*
+*.log
+*.eps
+*.jpg
+*.jpeg
+!.gitignore
+
+# Public assets: commit design assets; keep personal audio optional
+public/assets/music/ambient.mp3

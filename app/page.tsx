@@ -1,9 +1,52 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MoonIcon, SunIcon, MusicalNoteIcon } from "@heroicons/react/24/outline";
+import { MusicalNoteIcon } from "@heroicons/react/24/outline";
 
 type Theme = "dark" | "light";
+
+const CrescentIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    aria-hidden="true"
+    fill="none"
+  >
+    <path
+      d="M16.8 2.4c-1.1 2.1-1.4 4.7-.7 7.2 1.3 4.7-1.4 9.6-6.2 10.9-2.5.7-5.1.3-7.2-.8 1.7 2.6 4.6 4.3 8 4.3 5.3 0 9.6-4.3 9.6-9.6 0-3.4-1.7-6.4-4.3-8z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M17.7 6.8l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"
+      fill="currentColor"
+      opacity="0.8"
+    />
+  </svg>
+);
+
+const SunSparkIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    aria-hidden="true"
+    fill="none"
+  >
+    <path
+      d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <path
+      d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M19.8 4.2l-1.6 1.6M5.8 18.2l-1.6 1.6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      opacity="0.9"
+    />
+  </svg>
+);
 
 const debugLog = (payload: {
   hypothesisId: "H1" | "H2" | "H3" | "H4";
@@ -439,6 +482,7 @@ const EidPage = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const [cardVariant, setCardVariant] = useState(0);
+  const [showIntro, setShowIntro] = useState(true);
 
   const cardVariants = [
     {
@@ -477,6 +521,21 @@ const EidPage = () => {
   useEffect(() => {
     setCardVariant(Math.floor(Math.random() * cardVariants.length));
   }, [cardVariants.length]);
+
+  const stickerSources = [
+    "/assets/stickers/sticker-moon.svg",
+    "/assets/stickers/sticker-lantern.svg",
+    "/assets/stickers/sticker-star.svg"
+  ] as const;
+  const [stickerSrc, setStickerSrc] = useState<(typeof stickerSources)[number]>(
+    stickerSources[0]
+  );
+
+  useEffect(() => {
+    setStickerSrc(
+      stickerSources[Math.floor(Math.random() * stickerSources.length)]
+    );
+  }, [stickerSources.length]);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -624,20 +683,67 @@ const EidPage = () => {
 
       <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-transparent dark:opacity-100 opacity-0 transition-opacity duration-700" />
 
+      {showIntro ? (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Eid Mubarak welcome"
+        >
+          <div
+            className="absolute inset-0 bg-slate-950/50 backdrop-blur-2xl dark:bg-slate-950/70"
+            onClick={() => setShowIntro(false)}
+          />
+          <div className="relative w-full max-w-xl overflow-hidden rounded-[32px] border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl dark:bg-white/5">
+            <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-liquid-gold opacity-80 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-emerald-500/25 blur-3xl" />
+            <div className="relative space-y-4 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-emerald-200/90">
+                A little moment of light
+              </p>
+              <h1 className="calligraphy font-display text-4xl text-slate-50 md:text-5xl">
+                Eid Mubarak
+              </h1>
+              <p className="mx-auto max-w-md text-sm text-slate-200/90">
+                May your heart feel lighter than lanterns, and your home glow with
+                mercy, laughter, and gratitude.
+              </p>
+              <div className="mx-auto flex max-w-md items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowIntro(false);
+                    const el = document.getElementById("card");
+                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="rounded-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40"
+                >
+                  Open my Eid card
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowIntro(false)}
+                  className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-50"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/75 px-5 py-4 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/70">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 via-emerald-400 to-amber-300 shadow-lg shadow-emerald-500/40">
-              <span className="text-xs font-semibold text-slate-950">
-                EID
-              </span>
-            </div>
+            <img
+              src="/assets/logo/logo.png"
+              alt="MECC Eid"
+              className="h-9 w-9 rounded-2xl object-contain"
+            />
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700/80 dark:text-emerald-300/80">
                 Celestial Celebration
-              </p>
-              <p className="font-display text-sm text-slate-900 dark:text-slate-50">
-                Night of Light & Gratitude
               </p>
             </div>
           </div>
@@ -668,9 +774,9 @@ const EidPage = () => {
                     : "translate-x-full bg-gradient-to-tr from-amber-300 via-amber-200 to-sky-200 shadow-amber-400/40"
                 }`}
               />
-              <div className="relative z-10 flex w-full items-center justify-between px-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300">
-                <MoonIcon className="h-3.5 w-3.5" />
-                <SunIcon className="h-3.5 w-3.5" />
+              <div className="relative z-10 flex w-full items-center justify-between px-1.5 text-slate-700 dark:text-slate-300">
+                <CrescentIcon className="h-4 w-4" />
+                <SunSparkIcon className="h-4 w-4" />
               </div>
             </button>
           </div>
@@ -680,7 +786,7 @@ const EidPage = () => {
           loop
           preload="auto"
           crossOrigin="anonymous"
-          src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1fd7fb9f0e.mp3?filename=night-ambience-124900.mp3"
+          src="/assets/music/ambient.mp3"
           onError={() => {
             setAudioNotice(
               "Audio failed to load. Check your connection or try again."
@@ -718,88 +824,49 @@ const EidPage = () => {
         </div>
       ) : null}
 
-      <section
-        id="hero"
-        className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 px-5 pt-12 pb-16 md:pt-16 md:pb-20"
-      >
-        <HeroIllustration theme={theme} />
-
-        <div className="relative grid w-full gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:items-center">
-          <div className="space-y-5 md:space-y-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-600/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-950 shadow shadow-emerald-500/10 dark:border-emerald-400/40 dark:text-emerald-200 dark:shadow-emerald-500/30">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(74,222,128,1)]" />
-              Eid under a sky of mercy
-            </div>
-            <div className="space-y-3">
-              <h1 className="calligraphy font-display text-4xl leading-tight text-slate-950 dark:text-slate-50 sm:text-5xl md:text-[3.25rem]">
+      <section className="relative mx-auto max-w-6xl px-5 pt-10 pb-12 md:pt-12 md:pb-16">
+        <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl dark:bg-white/5">
+          <div className="pointer-events-none absolute inset-0 bg-liquid-gold opacity-60 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 bg-pattern-geo bg-geo opacity-[0.14]" />
+          <div className="relative grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
+            <div className="space-y-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-700/90 dark:text-emerald-300/80">
+                Your Eid card studio
+              </p>
+              <h1 className="calligraphy font-display text-4xl leading-tight text-slate-950 dark:text-slate-50 sm:text-5xl">
                 Eid Mubarak
                 <span className="block bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300 bg-clip-text text-transparent">
-                  ليلة من نور وامتنان
+                  رَمَضَانُ مَغْفِرَةٍ وَرَحْمَةٍ
                 </span>
               </h1>
-              <p className="max-w-xl text-sm text-slate-700 md:text-[0.95rem] dark:text-slate-300/90">
-                Bask under a celestial Eid night where lanterns float, stars
-                whisper duas, and every heartbeat echoes gratitude. Enter your
-                name and watch the sky celebrate you.
+              <p className="max-w-xl text-sm text-slate-700 dark:text-slate-300/90">
+                May Allah accept your fasting, forgive your sins, and fill your home with
+                peace. May your Eid be a new beginning of barakah, love, and answered duas.
               </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="#greeting"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 transition-transform hover:scale-[1.02]"
-              >
-                Personalize my Eid dua
-              </a>
-              <a
-                href="#card"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-xs font-medium text-slate-800 dark:border-slate-600/70 dark:bg-slate-900/60 dark:text-slate-200"
-              >
-                Create a digital Eid card
-              </a>
-            </div>
-          </div>
 
-          <div
-            id="greeting"
-            className={`relative w-full max-w-md justify-self-end p-5 shadow-glass-soft backdrop-blur-2xl ${
-              theme === "dark"
-                ? "glass-panel border-white/10 bg-white/5"
-                : "glass-panel-light border-slate-200/70 bg-white/75"
-            }`}
-          >
-            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-liquid-gold opacity-60 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-10 left-10 h-28 w-40 rounded-full bg-emerald-500/30 blur-3xl" />
-
-            <div className="relative space-y-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700/90 dark:text-emerald-300/80">
-                Your luminous greeting
-              </p>
-              <p className="font-display text-xl text-slate-950 dark:text-slate-50">
-                Let the sky whisper your name in duas.
-              </p>
-              <form onSubmit={onSubmit} className="mt-4 space-y-3">
+              <form onSubmit={onSubmit} className="space-y-3">
                 <label className="block text-xs font-medium text-slate-700 dark:text-slate-300/80">
-                  Type your name to receive a personalized Eid blessing
+                  Enter a name for the card
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your beautiful name"
-                    className="flex-1 rounded-2xl border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-slate-500/60 dark:bg-slate-900/60 dark:text-slate-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/40"
+                    className="min-w-[220px] flex-1 rounded-2xl border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-slate-500/60 dark:bg-slate-900/60 dark:text-slate-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/40"
                   />
                   <button
                     type="submit"
                     className="rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/40"
                   >
-                    Bless me
+                    Apply name
                   </button>
                 </div>
               </form>
 
               <div
                 aria-live="polite"
-                className="relative mt-4 min-h-[76px] overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/70 p-4 text-sm text-emerald-950 dark:border-emerald-200/20 dark:bg-slate-950/60 dark:text-emerald-100"
+                className="relative overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/70 p-4 text-sm text-emerald-950 dark:border-emerald-200/20 dark:bg-slate-950/60 dark:text-emerald-100"
               >
                 <Fireworks active={showGreeting && !!displayedName} />
                 {displayedName ? (
@@ -814,18 +881,81 @@ const EidPage = () => {
                       Eid Mubarak, {displayedName}!
                     </p>
                     <p className="text-xs text-emerald-900/90 dark:text-emerald-100/90">
-                      May your days glow with iman, your nights with serenity,
-                      and your heart with endless gratitude. May every dua you
-                      whispered in the quiet of the night find its way to mercy.
+                      May your days glow with iman, your nights with serenity, and your heart with gratitude.
                     </p>
                   </div>
                 ) : (
                   <p className="text-xs text-slate-700 dark:text-slate-300/90">
-                    Your greeting will shimmer here with fireworks the moment
-                    you share your name.
+                    Apply a name to trigger a celebratory greeting.
                   </p>
                 )}
               </div>
+            </div>
+
+            <div id="card" className="relative">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-1 shadow-2xl">
+                <div className="relative h-full w-full rounded-2xl bg-slate-950/80 p-5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-amber-300/12" />
+                  <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-400/20 blur-3xl" />
+                  <div className="absolute -left-14 -bottom-20 h-56 w-56 rounded-full bg-amber-300/20 blur-3xl" />
+
+                  <img
+                    src={stickerSrc}
+                    alt=""
+                    className="pointer-events-none absolute -right-2 -top-2 h-20 w-20 rotate-6 opacity-90 drop-shadow-[0_18px_35px_rgba(0,0,0,0.55)]"
+                  />
+
+                  <div className="relative flex h-full flex-col justify-between">
+                    <div className="flex items-center justify-between text-[11px] text-slate-300">
+                      <span className="rounded-full bg-emerald-500/20 px-2 py-1 font-semibold text-emerald-200">
+                        Eid Mubarak
+                      </span>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-slate-200">
+                          {cardVariants[cardVariant]?.label}
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="space-y-3 text-center">
+                      <p className="font-display text-2xl text-emerald-100">
+                        {displayedName
+                          ? `Eid Mubarak, ${displayedName}!`
+                          : "Eid Mubarak, dear soul!"}
+                      </p>
+                      <p className="mx-auto max-w-md text-xs text-slate-300">
+                        {cardVariants[cardVariant]?.message}
+                      </p>
+                      <div className="mx-auto flex w-fit items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-200">
+                        <span aria-hidden="true">🕌</span>
+                        <span>MECC Eid Card</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-end justify-between gap-3">
+                      <p className="text-[10px] text-slate-500">
+                        Share this blessing with someone you love.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCardVariant((v) => (v + 1) % cardVariants.length);
+                          setStickerSrc(
+                            stickerSources[
+                              Math.floor(Math.random() * stickerSources.length)
+                            ]
+                          );
+                        }}
+                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-slate-100 transition hover:bg-white/10"
+                      >
+                        Shuffle
+                        <span aria-hidden="true">↻</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -894,6 +1024,20 @@ const EidPage = () => {
                 </span>
                 ”
               </blockquote>
+              <div className="rounded-2xl border border-emerald-200/60 bg-white/70 p-4 text-sm text-slate-900 shadow-sm backdrop-blur-xl dark:border-emerald-200/20 dark:bg-slate-950/50 dark:text-slate-100">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-emerald-700/90 dark:text-emerald-300/80">
+                  Qur’an • Ramadan
+                </p>
+                <p className="mt-2 font-arabic text-base leading-relaxed text-slate-950 dark:text-slate-50">
+                  شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ هُدًى لِّلنَّاسِ وَبَيِّنَاتٍ مِّنَ الْهُدَىٰ وَالْفُرْقَانِ
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-slate-700 dark:text-slate-300/90">
+                  “The month of Ramadan is the one in which the Qur’an was revealed as guidance for people, and clear proofs of guidance and the criterion.”
+                  <span className="ml-2 font-semibold text-slate-600 dark:text-slate-400">
+                    (Al-Baqarah 2:185)
+                  </span>
+                </p>
+              </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 — A dua carried by the wind
               </p>
